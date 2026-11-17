@@ -1,0 +1,1 @@
+Use the matching frontend in this delivery. Axios sends Authorization: Basic followed by UTF-8 Base64 of email:password. Login returns account metadata only. No JWT/OAuth dependencies remain. The default local proxy calls port 8080 and preserves Basic headers and multipart bodies. See the frontend README and source.

@@ -1,0 +1,4 @@
+HTTP BASIC EDITION
+
+Read README.md. Start PostgreSQL, create home_loan_basic_demo, edit PostgreSQL credentials in src/main/resources/application.yml, then double-click START-BACKEND.cmd.
+Use DEMO-LOGINS.txt and the matching new frontend. No environment file or JWT/OAuth setup. Java 21 is required.

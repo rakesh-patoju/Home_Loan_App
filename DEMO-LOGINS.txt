@@ -1,0 +1,10 @@
+BASIC AUTH LOCAL DEMO
+Fresh database: home_loan_basic_demo
+
+Admin: admin@homeloan.demo
+Officers: officer1@homeloan.demo, officer2@homeloan.demo
+Customers: customer1@homeloan.demo through customer5@homeloan.demo
+
+All seeded demo accounts use: 0cRWHA5c_B1Y2p8OJcA4
+
+This password is configured under app.demo.password in application.yml. Existing accounts are not reset on restart. Use only fictional data.

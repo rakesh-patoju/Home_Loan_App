@@ -1,0 +1,1413 @@
+{
+  "info": {
+    "name": "Home Loan Basic Auth Demo",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Use demoPassword from DEMO-LOGINS.txt. Requests use HTTP Basic; login returns account metadata only. Follow the workflow manually; approval and rejection are alternative branches."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/api",
+      "type": "string"
+    },
+    {
+      "key": "demoPassword",
+      "value": "COPY_FROM_DEMO-LOGINS.txt",
+      "type": "string"
+    },
+    {
+      "key": "customerEmail",
+      "value": "customer1@homeloan.demo",
+      "type": "string"
+    },
+    {
+      "key": "officerEmail",
+      "value": "officer1@homeloan.demo",
+      "type": "string"
+    },
+    {
+      "key": "applicationId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "documentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "officerId",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "idempotencyKey",
+      "value": "postman-demo-application-001",
+      "type": "string"
+    },
+    {
+      "key": "newCustomerPassword",
+      "value": "SET_YOUR_OWN_10_PLUS_CHARACTER_PASSWORD",
+      "type": "string"
+    },
+    {
+      "key": "newOfficerPassword",
+      "value": "SET_YOUR_OWN_10_PLUS_CHARACTER_PASSWORD",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1 Authentication",
+      "item": [
+        {
+          "name": "Customer login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login succeeds\",()=>pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Assigned officer login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{officerEmail}}\",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": []
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@homeloan.demo\",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": []
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register fictional customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"New Demo Customer\",\n  \"email\": \"new-customer@example.test\",\n  \"password\": \"{{newCustomerPassword}}\",\n  \"mobile\": \"9000000099\",\n  \"dateOfBirth\": \"1995-05-01\",\n  \"address\": \"10 Demo Street\",\n  \"employmentType\": \"SALARIED\",\n  \"monthlyIncome\": 100000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 Customer and products",
+      "item": [
+        {
+          "name": "Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/customers/profile",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/customers/profile",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Aarav Demo\",\n  \"mobile\": \"9000000000\",\n  \"dateOfBirth\": \"1990-06-15\",\n  \"address\": \"1 Demo Street, Fictional City\",\n  \"employmentType\": \"SALARIED\",\n  \"monthlyIncome\": 100000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Public products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/loan-products",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Public product detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/loan-products/1",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Preliminary eligibility",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/eligibility/check",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"monthlyIncome\": 100000,\n  \"existingEmi\": 5000,\n  \"requestedLoanAmount\": 3000000,\n  \"tenureMonths\": 240,\n  \"interestRate\": 8.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 Submit and track",
+      "item": [
+        {
+          "name": "Submit (keep key for retry; change key for a new application)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotencyKey}}"
+              }
+            ],
+            "url": "{{baseUrl}}/loan-applications",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"loanProductId\": 1,\n  \"requestedLoanAmount\": 3000000,\n  \"tenureMonths\": 240,\n  \"monthlyIncome\": 100000,\n  \"employmentType\": \"SALARIED\",\n  \"existingEmi\": 5000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "const a=pm.response.json(); pm.collectionVariables.set(\"applicationId\",a.id);",
+                  "pm.collectionVariables.set(\"officerId\",a.assignedOfficerId);",
+                  "// Fresh seeded demo has officer user IDs 2 and 3. Check admin officers for other databases.",
+                  "if (a.assignedOfficerId === 2) pm.collectionVariables.set(\"officerEmail\",\"officer1@homeloan.demo\");",
+                  "if (a.assignedOfficerId === 3) pm.collectionVariables.set(\"officerEmail\",\"officer2@homeloan.demo\");",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "My applications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications/my-applications?page=0&size=20&sort=applicationDate,desc",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Application details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Status history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/history",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Customer dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/dashboard/customer",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 Documents \u2014 select files in Postman",
+      "item": [
+        {
+          "name": "Upload IDENTITY_PROOF (choose sample PDF)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/documents",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "documentType",
+                  "value": "IDENTITY_PROOF",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"documentId\",pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upload ADDRESS_PROOF (choose sample PDF)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/documents",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "documentType",
+                  "value": "ADDRESS_PROOF",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"documentId\",pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upload INCOME_PROOF (choose sample PDF)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/documents",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "documentType",
+                  "value": "INCOME_PROOF",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"documentId\",pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upload BANK_STATEMENT (choose sample PDF)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/documents",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "documentType",
+                  "value": "BANK_STATEMENT",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"documentId\",pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upload PROPERTY_DOCUMENT (choose sample PDF)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/documents",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "documentType",
+                  "value": "PROPERTY_DOCUMENT",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"documentId\",pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List documents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/documents",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Download document",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/documents/{{documentId}}/download",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{customerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Verify selected document (repeat for every document ID)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/documents/{{documentId}}/verify",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{officerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"VERIFIED\",\n  \"remarks\": \"Fictional document reviewed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5 Officer workflow",
+      "item": [
+        {
+          "name": "Assigned applications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{officerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "View customer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/customer",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{officerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Begin review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/status",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{officerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"UNDER_REVIEW\",\n  \"remarks\": \"Review started\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Add remark",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/remarks",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{officerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Customer details reviewed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Request additional documents (optional branch)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/status",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{officerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DOCUMENT_PENDING\",\n  \"remarks\": \"Please upload clearer income proof\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Approve (after all five latest documents verified)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/status",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{officerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\",\n  \"remarks\": \"Required documents verified and application reviewed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Reject (alternative to approval)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/status",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{officerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"REJECTED\",\n  \"remarks\": \"Incomplete or unacceptable application information\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Officer dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/dashboard/officer",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{officerEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6 Admin",
+      "item": [
+        {
+          "name": "All applications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/loan-applications",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@homeloan.demo",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reassign officer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/assignment",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@homeloan.demo",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"officerId\": \"{{officerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Sanction approved application",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/status",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@homeloan.demo",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SANCTIONED\",\n  \"remarks\": \"Demo sanction recorded\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Record demo disbursement",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/loan-applications/{{applicationId}}/status",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@homeloan.demo",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DISBURSED\",\n  \"remarks\": \"Demo disbursement recorded; no funds transferred\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Admin dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/dashboard/admin",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@homeloan.demo",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/customers",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@homeloan.demo",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Officers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/loan-officers",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@homeloan.demo",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "All products including inactive",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/loan-products",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@homeloan.demo",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/loan-products",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@homeloan.demo",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"Custom Demo Product\",\n  \"minimumLoanAmount\": 100000,\n  \"maximumLoanAmount\": 5000000,\n  \"interestRate\": 8.25,\n  \"minimumTenureMonths\": 12,\n  \"maximumTenureMonths\": 240,\n  \"description\": \"Fictional product\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Create officer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/loan-officers",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@homeloan.demo",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"New Demo Officer\",\n  \"email\": \"officer3@example.test\",\n  \"password\": \"{{newOfficerPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Disable customer (optional; customerId is not userId)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/customers/{{customerId}}/enabled",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@homeloan.demo",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{demoPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

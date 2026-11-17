@@ -1,0 +1,1 @@
+CORS source is explicitly passed to the Spring Security filter chain. Allowed-origin and untrusted-origin preflight regression tests are included. Basic Authorization is supported. Default origins are listed in application.yml.

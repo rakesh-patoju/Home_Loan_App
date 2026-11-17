@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: home-loan-backend
+  datasource:
+    url: jdbc:postgresql://ep-bitter-fog-beekwbtw.c-9.us-east-2.aws.neon.tech/homeloan
+    username: neondb_owner
+    password: npg_hxqYy5k9KBoU
+    hikari:
+      transaction-isolation: TRANSACTION_READ_COMMITTED
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+server:
+  address: 127.0.0.1
+  port: 8080
+  error:
+    include-message: never
+app:
+  upload-dir: ./private-uploads
+  allowed-origins: http://127.0.0.1:5173
+  max-dti-percent: 50
+  min-monthly-income: 25000
+  demo:
+    enabled: true
+    password: "0cRWHA5c_B1Y2p8OJcA4"
+logging:
+  level:
+    com.demo.homeloan: INFO
