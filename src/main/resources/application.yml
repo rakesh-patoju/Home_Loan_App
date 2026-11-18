@@ -3,8 +3,8 @@ spring:
     name: home-loan-backend
   datasource:
     url: jdbc:postgresql://ep-bitter-fog-beekwbtw.c-9.us-east-2.aws.neon.tech/homeloan
-    username: neondb_owner
-    password: npg_hxqYy5k9KBoU
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     hikari:
       transaction-isolation: TRANSACTION_READ_COMMITTED
   jpa:
