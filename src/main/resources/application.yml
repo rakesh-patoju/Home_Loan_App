@@ -30,7 +30,7 @@ server:
     include-message: never
 app:
   upload-dir: ./private-uploads
-  allowed-origins: http://127.0.0.1:5173
+  allowed-origins: http://127.0.0.1:5173,https://nestwellhomeloan.vercel.app/
   max-dti-percent: 50
   min-monthly-income: 25000
   demo:
